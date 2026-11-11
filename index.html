@@ -533,7 +533,7 @@ function abrirForm(o = {}) {
         <div class="field"><label for="fFim">Término</label><input id="fFim" type="time" step="300" value="${hm(fim)}"></div>
       </div>
       <div class="grid2">
-        <div class="field"><label for="fPart">Participantes</label><input id="fPart" type="number" min="1" max="999" value="${esc(ed ? ed.participantes : o.participantes || '')}" placeholder="Opcional"></div>
+        <div class="field"><label for="fPart">Participantes <span class="muted" style="font-weight:400">(opcional)</span></label><input id="fPart" type="text" inputmode="numeric" autocomplete="off" maxlength="3" value="${esc(ed ? ed.participantes : o.participantes || '')}" placeholder="Ex.: 6"></div>
         ${ed ? '' : `<div class="field"><label for="fRep">Repetir</label><select id="fRep">
           <option value="nenhuma">Não repete</option><option value="diaria">Todos os dias</option><option value="uteis">Dias úteis (seg–sex)</option>
           <option value="semanal">Toda semana</option><option value="quinzenal">A cada 2 semanas</option><option value="mensal">Todo mês</option></select></div>`}
@@ -673,7 +673,7 @@ function abrirSolicitar(r, pre = {}) {
         <div class="field"><label for="sFim">Término</label><input id="sFim" type="time" step="300" value="${hm(fim)}"></div>
       </div>
       <div class="grid2">
-        <div class="field"><label for="sPart">Participantes</label><input id="sPart" type="number" min="1" max="999" value="${esc(pre.participantes || '')}"></div>
+        <div class="field"><label for="sPart">Participantes <span class="muted" style="font-weight:400">(opcional)</span></label><input id="sPart" type="text" inputmode="numeric" autocomplete="off" maxlength="3" value="${esc(pre.participantes || '')}" placeholder="Ex.: 6"></div>
         <div class="field"><label for="sMot">Motivo</label><select id="sMot">
           <option>Reunião com diretoria ou liderança</option><option>Cliente ou parceiro externo</option><option>Precisa de mais lugares</option>
           <option>Prazo ou urgência</option><option>Outro</option></select></div>
@@ -831,6 +831,12 @@ function novaEm(ini) {
 }
 
 /* ---------- Eventos ---------- */
+document.addEventListener('input', e => {
+  if (e.target.id === 'fPart' || e.target.id === 'sPart') {
+    const v = e.target.value.replace(/\D/g, '').slice(0, 3);
+    if (v !== e.target.value) e.target.value = v;
+  }
+});
 document.addEventListener('keydown', e => { if (e.key === 'Escape') fechar(); });
 document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => { st.view = b.dataset.view; store.set('rs1.view', st.view); st.scroll = null; render(); atualizar(); }));
 $('#prev').addEventListener('click', () => { st.cursor = addDays(st.cursor, st.view === 'dia' ? -1 : st.view === 'semana' ? -7 : -30); render(); atualizar(); });
