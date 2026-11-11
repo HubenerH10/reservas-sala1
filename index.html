@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Reservas Sala 1</title>
+<meta name="theme-color" content="#1D5BD6">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231D5BD6'/%3E%3Crect x='7' y='9' width='18' height='16' rx='2' fill='none' stroke='white' stroke-width='2.4'/%3E%3Cpath d='M7 14h18M12 6v5M20 6v5' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --surface-2:#E8ECF2; --fg:#121C27; --muted:#5A6878; --line:#D6DCE4; --line-soft:#E7EBF0;
+  --accent:#1D5BD6; --accent-fg:#FFFFFF; --accent-soft:#DCE6FB;
+  --ok:#17804B; --ok-bg:#DDF3E6; --busy:#C2362B; --busy-bg:#FBE3E0; --soon:#9A5A00; --soon-bg:#FCEFD9;
+  --ev-bg:#DCE6FB; --ev-fg:#0F3A8C; --ev-bd:#9DB7EE; --mine-bg:#1D5BD6; --mine-fg:#FFFFFF;
+  --shadow:0 10px 30px rgba(18,28,39,.16);
+  --f-display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E141B; --surface:#151D27; --surface-2:#1C2633; --fg:#E6ECF3; --muted:#93A1B2; --line:#2A3646; --line-soft:#1F2936;
+  --accent:#7AA2FF; --accent-fg:#0B1220; --accent-soft:#1E2E4D;
+  --ok:#4CC386; --ok-bg:#12301F; --busy:#FF7B6E; --busy-bg:#3A1915; --soon:#F0B254; --soon-bg:#35260F;
+  --ev-bg:#1E2E4D; --ev-fg:#C4D5FF; --ev-bd:#34507F; --mine-bg:#3F6FE0; --mine-fg:#FFFFFF;
+  --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark;
+}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.45}
+.wrap{max-width:1320px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.top h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
+.top .sub{color:var(--muted);margin-top:2px}
+.who{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--surface-2);font-size:12px;font-weight:500}
+.chip.admin{background:var(--accent-soft);color:var(--ev-fg)}
+
+.sign{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px}
+.sign .plate{display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:10px;background:var(--ok-bg);color:var(--ok)}
+.sign .led{width:12px;height:12px;border-radius:50%;background:currentColor;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 22%,transparent)}
+.sign .word{font-family:var(--f-display);font-weight:800;font-size:26px;letter-spacing:.06em}
+.sign.busy .plate{background:var(--busy-bg);color:var(--busy)}
+.sign.soon .plate{background:var(--soon-bg);color:var(--soon)}
+.sign.busy .led{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+@media (prefers-reduced-motion: reduce){.sign.busy .led{animation:none}}
+.sign .info{min-width:0}
+.sign .info strong{display:block;font-size:16px;font-family:var(--f-display);overflow-wrap:anywhere}
+.sign .info span{color:var(--muted)}
+@media (max-width:640px){.sign{grid-template-columns:1fr;gap:12px}.sign .plate{justify-self:start}}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-weight:500;line-height:1.2}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{color:var(--busy);border-color:color-mix(in srgb,var(--busy) 40%,var(--line))}
+.btn.danger.armed{background:var(--busy);color:#fff;border-color:var(--busy)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.link{border:0;background:none;padding:4px 0;color:var(--accent);font-weight:500;text-align:left}
+.btn.link:hover{text-decoration:underline;background:none}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:9px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:7px;font-weight:500;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between}
+.nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nav h2{font-size:18px;font-weight:700;margin-left:6px}
+.iconbtn{width:34px;height:34px;padding:0;display:inline-grid;place-items:center}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.main{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:16px;align-items:start}
+@media (max-width:980px){.main{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0}
+
+.cal-scroll{overflow-x:auto}
+.cal.week{min-width:720px}
+.cal-head{display:grid;border-bottom:1px solid var(--line)}
+.cal-head .dh{padding:10px 8px;text-align:center;border-left:1px solid var(--line-soft)}
+.cal-head .dh .wd{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.cal-head .dh .dn{font-family:var(--f-display);font-size:20px;font-weight:700;line-height:1.1}
+.cal-head .dh.today .dn span{display:inline-block;min-width:32px;padding:1px 6px;border-radius:999px;background:var(--accent);color:var(--accent-fg)}
+.cal-body{max-height:620px;overflow-y:auto;position:relative}
+.cal-grid{display:grid;position:relative}
+.gutter div{height:44px;font-size:11px;color:var(--muted);text-align:right;padding-right:8px;transform:translateY(-7px);font-family:var(--f-mono)}
+.gutter div:first-child{visibility:hidden}
+.col{position:relative;border-left:1px solid var(--line-soft);height:calc(44px * 24);background-image:linear-gradient(to bottom,var(--line-soft) 1px,transparent 1px);background-size:100% 44px;cursor:crosshair}
+.col.today{background-color:color-mix(in srgb,var(--accent) 4%,transparent)}
+.col.past{cursor:default;background-color:color-mix(in srgb,var(--fg) 3%,transparent)}
+.ev{position:absolute;left:3px;right:3px;border-radius:7px;border:1px solid var(--ev-bd);background:var(--ev-bg);color:var(--ev-fg);text-align:left;padding:3px 6px;overflow:hidden;font-size:12px;line-height:1.25;display:flex;flex-direction:column;gap:1px;z-index:2}
+.ev.mine{background:var(--mine-bg);color:var(--mine-fg);border-color:var(--mine-bg)}
+.ev.hold{background:repeating-linear-gradient(135deg,var(--soon-bg) 0 6px,var(--surface) 6px 12px);color:var(--soon);border:1px dashed var(--soon)}
+.ev.pastev{opacity:.55}
+.ev .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev .m{font-size:11px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev.short{flex-direction:row;gap:6px;align-items:center;padding-block:1px}
+.nowline{position:absolute;left:0;right:0;height:2px;background:var(--busy);z-index:3;pointer-events:none}
+.nowline::before{content:"";position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--busy)}
+
+.list{padding:8px 16px 16px}
+.list .day{padding-top:14px}
+.list .day h3{font-size:14px;font-weight:700;padding-bottom:6px;border-bottom:1px solid var(--line-soft)}
+.list .day h3::first-letter{text-transform:uppercase}
+.row{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 4px;border:0;border-bottom:1px solid var(--line-soft);width:100%;background:none;text-align:left}
+.row:hover{background:var(--surface-2)}
+.row .tm{font-family:var(--f-mono);font-size:13px}
+.row .tt{font-weight:600;overflow-wrap:anywhere}
+.row .ow{font-size:12px;color:var(--muted)}
+.tag{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.tag.now{background:var(--busy-bg);color:var(--busy);font-weight:600}
+.tag.mine{background:var(--accent-soft);color:var(--ev-fg)}
+.tag.hold{background:var(--soon-bg);color:var(--soon)}
+@media (max-width:560px){.row{grid-template-columns:86px minmax(0,1fr)}.row .tag{display:none}}
+
+.aside{display:flex;flex-direction:column;gap:16px}
+.aside .panel{padding:14px 16px}
+.aside h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.mini{display:flex;flex-direction:column}
+.mini > button{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;text-align:left;border:0;background:none;padding:8px 0;border-top:1px solid var(--line-soft)}
+.mini > button:first-child{border-top:0}
+.mini > button:hover .tt{text-decoration:underline}
+.mini .tm{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:1px}
+.mini .tt{font-weight:600;overflow-wrap:anywhere}
+.mini .ow{font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);padding:6px 0}
+.note{font-size:12px;color:var(--muted);margin:0}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+.overlay{position:fixed;inset:0;background:rgba(10,16,24,.45);z-index:50;display:grid;place-items:center;padding:16px}
+.modal{background:var(--surface);color:var(--fg);border-radius:14px;box-shadow:var(--shadow);width:min(580px,100%);max-height:calc(100dvh - 32px);overflow:auto;border:1px solid var(--line)}
+.modal header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px 8px}
+.modal header h2{font-size:20px;font-weight:700;overflow-wrap:anywhere}
+.modal .body{padding:8px 20px 6px;display:flex;flex-direction:column;gap:14px}
+.modal footer{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:14px 20px 18px}
+.modal footer .left{margin-right:auto;display:flex;gap:8px;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-weight:600;font-size:13px}
+.field input,.field select,.field textarea{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 10px;width:100%;min-width:0}
+.field textarea{min-height:80px;resize:vertical}
+.grid3{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.grid3{grid-template-columns:1fr 1fr}.grid3 .field:first-child{grid-column:1 / -1}.grid2{grid-template-columns:1fr}}
+.err{background:var(--busy-bg);color:var(--busy);border-radius:8px;padding:10px 12px;font-size:13px}
+.warn{background:var(--soon-bg);color:var(--soon);border-radius:8px;padding:10px 12px;font-size:13px}
+.okbox{background:var(--ok-bg);color:var(--ok);border-radius:8px;padding:10px 12px;font-size:13px}
+.warn ul,.err ul{margin:6px 0 0;padding-left:18px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.dl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 12px;margin:0}
+.dl dt{color:var(--muted);font-size:13px}
+.dl dd{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.sub-box{border-top:1px solid var(--line-soft);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.check{display:flex;gap:8px;align-items:center;font-size:13px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:60;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.banner{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:14px 16px;color:var(--muted)}
+.banner code{font-family:var(--f-mono);font-size:12px;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+
+.notice{display:flex;flex-direction:column;gap:8px}
+.notice .item{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--soon-bg);color:var(--soon);border-radius:12px;padding:12px 16px}
+.notice .item.good{background:var(--ok-bg);color:var(--ok)}
+.notice .item.bad{background:var(--busy-bg);color:var(--busy)}
+.notice .item span{min-width:0;overflow-wrap:anywhere}
+.notice .item .acts{margin:0}
+.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--busy);color:#fff;font-size:11px;font-weight:700;margin-left:6px;vertical-align:2px}
+.reqgroup{display:flex;flex-direction:column}
+.reqgroup + .reqgroup{margin-top:10px}
+.req{display:flex;flex-direction:column;gap:2px;text-align:left;border:0;background:none;padding:8px 0;border-top:1px solid var(--line-soft)}
+.req:hover .tt{text-decoration:underline}
+.req .tt{font-weight:600;overflow-wrap:anywhere}
+.req .ow{font-size:12px;color:var(--muted)}
+.st{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);width:fit-content}
+.st.pendente{background:var(--soon-bg);color:var(--soon)}
+.st.aceita{background:var(--accent-soft);color:var(--ev-fg)}
+.st.confirmada{background:var(--ok-bg);color:var(--ok)}
+.st.recusada,.st.expirada{background:var(--busy-bg);color:var(--busy)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vs > div{background:var(--bg);border:1px solid var(--line-soft);border-radius:10px;padding:10px 12px;min-width:0}
+.vs strong{display:block;overflow-wrap:anywhere}
+.vs .mono{font-size:12px}
+@media (max-width:480px){.vs{grid-template-columns:1fr}}
+.choice{display:flex;flex-direction:column;gap:8px}
+.choice label{display:flex;gap:8px;align-items:flex-start;font-size:13px}
+.loading{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="label">Marketing · Sala de reunião</div>
+      <h1>Sala 1</h1>
+      <div class="sub">Veja quem reservou, o tema e o horário, e faça sua reserva. Não precisa de login.</div>
+    </div>
+    <div class="who" id="who"></div>
+  </header>
+
+  <div class="banner" id="setup" hidden></div>
+  <div class="notice" id="notices"></div>
+
+  <section class="sign" id="sign" aria-live="polite">
+    <div class="plate"><span class="led"></span><span class="word" id="signWord">…</span></div>
+    <div class="info"><strong id="signMain">Carregando a agenda…</strong><span id="signSub"></span></div>
+    <div id="signAct"></div>
+  </section>
+
+  <div class="toolbar">
+    <div class="nav">
+      <button class="btn iconbtn" id="prev" aria-label="Anterior">‹</button>
+      <button class="btn" id="hoje">Hoje</button>
+      <button class="btn iconbtn" id="next" aria-label="Próximo">›</button>
+      <h2 id="titulo"></h2>
+    </div>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="Visualização">
+        <button data-view="dia">Dia</button><button data-view="semana">Semana</button><button data-view="lista">Lista</button>
+      </div>
+      <button class="btn primary" id="nova">+ Nova reserva</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="panel" id="cal"></div>
+    <aside class="aside" id="aside"></aside>
+  </div>
+</div>
+<div id="modalRoot"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ================= CONFIGURAÇÃO ================= */
+const API_URL = 'https://script.google.com/macros/s/AKfycbyM7CskAp9mxzg7UId0lnTPOId_IiY9IA004bOG4_zlzQYGStPTxmpA53TP-eWrHLqwmg/exec'; // URL do App da Web do Apps Script (termina em /exec)
+/* ================================================ */
+
+const configurado = /^https:\/\/script\.google\.com\/.+\/exec$/.test(API_URL);
+const H = 44, MIN = 6e4, HORA = 36e5, DIA = 864e5;
+const DSEM = ['dom','seg','ter','qua','qui','sex','sáb'];
+const DSEM_LONGO = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+const MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const MESES_LONGO = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const hm = ms => { const d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const sod = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const sow = d => { const x = sod(d); return addDays(x, -((x.getDay() + 6) % 7)); };
+const ymd = d => { d = new Date(d); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+const juntar = (ds, ts) => { const [y,m,d] = ds.split('-').map(Number); const [h,mi] = ts.split(':').map(Number); return new Date(y, m-1, d, h, mi).getTime(); };
+const fmtDia = ms => { const d = new Date(ms); return `${DSEM[d.getDay()]}, ${pad(d.getDate())}/${pad(d.getMonth()+1)}`; };
+const quando = (i, f) => `${fmtDia(i)} · ${hm(i)}–${hm(f)}${sod(i).getTime() !== sod(f - 1).getTime() ? ' (+1 dia)' : ''}`;
+const arred = (ms, passo = 15) => Math.ceil(ms / (passo * MIN)) * passo * MIN;
+const okEmail = e => /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(e);
+
+const store = {
+  get(k, def) { try { const v = localStorage.getItem(k); return v == null ? def : JSON.parse(v); } catch { return def; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const sess = {
+  get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch {} },
+};
+const tokens = () => store.get('rs1.tokens', []);
+const addTokens = arr => { const s = new Set(tokens()); arr.filter(Boolean).forEach(t => s.add(t)); store.set('rs1.tokens', [...s].slice(-200)); };
+const perfil = () => store.get('rs1.perfil', { nome: '', email: '' });
+const salvarPerfil = (nome, email) => store.set('rs1.perfil', { nome, email });
+
+const st = {
+  view: store.get('rs1.view', innerWidth < 700 ? 'dia' : 'semana'),
+  cursor: sod(new Date()),
+  reservas: [],
+  mine: { reservas: [], feitos: [], recebidos: [] },
+  admin: false,
+  erro: null,
+  carregou: false,
+  scroll: null,
+  dispensados: store.get('rs1.dispensados', []),
+};
+
+/* ---------- API ---------- */
+async function api(action, body = {}) {
+  if (!configurado) throw new Error('O portal ainda não está ligado à planilha (falta a URL do App da Web).');
+  const payload = { action, ...body, tokens: tokens() };
+  const pw = sess.get('rs1.admin'); if (pw) payload.admin = pw;
+  let res;
+  try {
+    res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+  } catch { throw new Error('Sem conexão com o servidor. Verifique a internet e tente de novo.'); }
+  let j;
+  try { j = await res.json(); } catch { throw new Error('O servidor respondeu de forma inesperada. Tente de novo em instantes.'); }
+  if (!j.ok) { const e = new Error(j.mensagem || 'Não foi possível concluir.'); e.dados = j; throw e; }
+  return j;
+}
+
+function faixa() {
+  const hoje = sod(new Date());
+  let ini, fim;
+  if (st.view === 'dia') { ini = st.cursor; fim = addDays(st.cursor, 1); }
+  else if (st.view === 'semana') { ini = sow(st.cursor); fim = addDays(ini, 7); }
+  else { ini = st.cursor; fim = addDays(st.cursor, 30); }
+  return { ini, fim, de: Math.min(ini.getTime(), hoje.getTime()), ate: Math.max(fim.getTime(), addDays(hoje, 1).getTime()) };
+}
+
+async function carregar() {
+  const f = faixa();
+  const [lista, minhas] = await Promise.all([
+    api('listar', { de: f.de, ate: f.ate }),
+    (tokens().length || sess.get('rs1.admin')) ? api('minhas') : Promise.resolve(null),
+  ]);
+  st.reservas = lista.reservas;
+  st.admin = !!lista.admin;
+  if (!st.admin && sess.get('rs1.admin')) { sess.set('rs1.admin', null); toast('Sessão de administrador encerrada.'); }
+  st.mine = minhas || { reservas: [], feitos: [], recebidos: [] };
+  st.erro = null; st.carregou = true;
+}
+
+async function atualizar() {
+  if (!configurado) { render(); return; }
+  try { await carregar(); } catch (e) { st.erro = e.message; }
+  render();
+}
+
+/* ---------- Render ---------- */
+function render() {
+  renderSetup(); renderWho(); renderSign(); renderNotices(); renderToolbar(); renderCal(); renderAside();
+}
+
+function renderSetup() {
+  const el = $('#setup');
+  if (!configurado) {
+    el.hidden = false;
+    el.innerHTML = `<strong>Portal ainda não configurado.</strong> Abra o <code>index.html</code> e cole em <code>API_URL</code> a URL do App da Web do Apps Script (termina em <code>/exec</code>). O passo a passo está no LEIA-ME.`;
+  } else if (st.erro) {
+    el.hidden = false;
+    el.innerHTML = `<strong>Não foi possível carregar a agenda.</strong> ${esc(st.erro)} <button class="btn link" data-act="recarregar">Tentar de novo</button>`;
+  } else el.hidden = true;
+}
+
+function renderWho() {
+  const p = perfil();
+  $('#who').innerHTML =
+    (p.nome ? `<span class="chip">${esc(p.nome)}</span>` : '') +
+    (st.admin ? `<span class="chip admin">Administrador</span><button class="btn ghost" data-act="sairAdmin">Sair do modo admin</button>`
+              : `<button class="btn ghost" data-act="entrarAdmin">Admin</button>`);
+}
+
+function hojeLista() {
+  const now = Date.now(), fimDia = addDays(sod(new Date()), 1).getTime();
+  return st.reservas.filter(r => r.fim > now && r.inicio < fimDia).sort((a, b) => a.inicio - b.inicio);
+}
+
+function renderSign() {
+  const sign = $('#sign');
+  if (!st.carregou) { sign.className = 'sign'; $('#signWord').textContent = configurado ? '…' : '—'; return; }
+  const now = Date.now();
+  const lista = hojeLista();
+  const atual = lista.find(r => r.inicio <= now);
+  const prox = lista.find(r => r.inicio > now);
+  let cls = '', word = 'LIVRE', main, sub, acao = '';
+  if (atual) {
+    cls = 'busy'; word = 'EM USO';
+    main = atual.status === 'guardada' ? `Guardado para ${atual.nome}` : atual.titulo;
+    sub = `${atual.nome} · até ${hm(atual.fim)}` + (prox ? ` · depois: ${prox.titulo} às ${hm(prox.inicio)}` : '');
+  } else if (prox && prox.inicio - now <= 15 * MIN) {
+    cls = 'soon'; word = 'EM BREVE';
+    main = prox.titulo; sub = `${prox.nome} · começa às ${hm(prox.inicio)}`;
+  } else {
+    main = prox ? `Livre até ${hm(prox.inicio)}` : 'Livre pelo resto do dia';
+    sub = prox ? `Próxima: ${prox.titulo} (${prox.nome})` : 'Nenhuma reserva para hoje a partir de agora.';
+    acao = `<button class="btn primary" data-act="agora">Reservar agora</button>`;
+  }
+  sign.className = 'sign ' + cls;
+  $('#signWord').textContent = word;
+  $('#signMain').textContent = main;
+  $('#signSub').textContent = sub;
+  $('#signAct').innerHTML = acao;
+}
+
+function renderNotices() {
+  const out = [];
+  const now = Date.now();
+  st.mine.recebidos.forEach(p => out.push(`<div class="item"><span><strong>${esc(p.nome)}</strong> pediu o horário de ${esc(quando(p.inicio, p.fim))}, que coincide com <strong>${esc(p.reservaTitulo)}</strong>${p.meuDono ? '' : ` (de ${esc(p.donoNome)})`}.</span><div class="acts"><button class="btn" data-act="responder" data-id="${p.id}">Responder</button></div></div>`));
+  st.mine.feitos.filter(p => p.status === 'aceita').forEach(p => out.push(`<div class="item good"><span>Seu pedido para <strong>${esc(p.titulo)}</strong> foi aceito. O horário (${esc(quando(p.inicio, p.fim))}) está guardado até ${esc(fmtDia(p.expiraEm))} às ${hm(p.expiraEm)}.</span><div class="acts"><button class="btn primary" data-act="confirmar" data-id="${p.id}">Confirmar reserva</button><button class="btn" data-act="desistir" data-id="${p.id}">Desistir</button></div></div>`));
+  st.mine.feitos.filter(p => (p.status === 'recusada' || p.status === 'liberada') && p.respondidoEm > now - 3 * DIA && !st.dispensados.includes(p.id)).forEach(p => out.push(`<div class="item ${p.status === 'recusada' ? 'bad' : ''}"><span>${p.status === 'recusada' ? `${esc(p.donoNome)} manteve a reserva e recusou seu pedido para <strong>${esc(p.titulo)}</strong>.${p.resposta ? ` Mensagem: “${esc(p.resposta)}”` : ''}` : `O horário que você pediu (${esc(quando(p.inicio, p.fim))}) ficou livre. Reserve direto, se ainda precisar.`}</span><div class="acts"><button class="btn" data-act="dispensar" data-id="${p.id}">Ok</button></div></div>`));
+  $('#notices').innerHTML = out.join('');
+}
+
+function renderToolbar() {
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === st.view)));
+  let t;
+  if (st.view === 'dia') { const d = st.cursor; t = `${DSEM_LONGO[d.getDay()]}, ${d.getDate()} de ${MESES_LONGO[d.getMonth()]}`; }
+  else if (st.view === 'semana') {
+    const a = sow(st.cursor), b = addDays(a, 6);
+    t = a.getMonth() === b.getMonth() ? `${a.getDate()} – ${b.getDate()} ${MESES[a.getMonth()]} ${b.getFullYear()}` : `${a.getDate()} ${MESES[a.getMonth()]} – ${b.getDate()} ${MESES[b.getMonth()]} ${b.getFullYear()}`;
+  } else t = sod(st.cursor).getTime() === sod(new Date()).getTime() ? 'Próximos 30 dias' : `30 dias a partir de ${pad(st.cursor.getDate())}/${pad(st.cursor.getMonth()+1)}`;
+  $('#titulo').textContent = t;
+}
+
+function evClass(r, now) {
+  return 'ev' + (r.status === 'guardada' ? ' hold' : r.meu ? ' mine' : '') + (r.fim < now ? ' pastev' : '');
+}
+
+function renderCal() {
+  const cal = $('#cal');
+  const body = $('#calBody');
+  if (body) st.scroll = body.scrollTop;
+  if (st.view === 'lista') { cal.innerHTML = listaHTML(); return; }
+  const dias = st.view === 'dia' ? [st.cursor] : Array.from({ length: 7 }, (_, i) => addDays(sow(st.cursor), i));
+  const now = Date.now(), hoje = sod(new Date()).getTime();
+  const cols = `56px repeat(${dias.length}, minmax(0,1fr))`;
+  const head = dias.map(d => `<div class="dh ${d.getTime() === hoje ? 'today' : ''}"><div class="wd">${DSEM[d.getDay()]}</div><div class="dn"><span>${d.getDate()}</span></div></div>`).join('');
+  const gutter = Array.from({ length: 24 }, (_, h) => `<div>${pad(h)}:00</div>`).join('');
+  const colunas = dias.map(d => {
+    const ds = d.getTime(), de = addDays(d, 1).getTime();
+    const evs = st.reservas.filter(r => r.inicio < de && r.fim > ds).map(r => {
+      const a = Math.max(r.inicio, ds), b = Math.min(r.fim, de);
+      const top = (a - ds) / HORA * H, alt = Math.max(18, (b - a) / HORA * H - 2);
+      const curto = alt < 36;
+      const titulo = r.status === 'guardada' ? `Guardado para ${r.nome}` : r.titulo;
+      return `<button class="${evClass(r, now)}${curto ? ' short' : ''}" style="top:${top}px;height:${alt}px" data-ev="${r.id}" title="${esc(titulo)} · ${esc(r.nome)} · ${hm(r.inicio)}–${hm(r.fim)}"><span class="t">${esc(titulo)}</span><span class="m">${hm(r.inicio)}–${hm(r.fim)} · ${esc(r.nome)}</span></button>`;
+    }).join('');
+    const nl = ds === hoje ? `<div class="nowline" style="top:${(now - ds) / HORA * H}px"></div>` : '';
+    return `<div class="col ${ds === hoje ? 'today' : ''} ${de <= now ? 'past' : ''}" data-day="${ds}">${evs}${nl}</div>`;
+  }).join('');
+  cal.innerHTML = `<div class="cal-scroll"><div class="cal ${dias.length > 1 ? 'week' : ''}">
+    <div class="cal-head" style="grid-template-columns:${cols}"><div></div>${head}</div>
+    <div class="cal-body" id="calBody"><div class="cal-grid" style="grid-template-columns:${cols}"><div class="gutter">${gutter}</div>${colunas}</div></div>
+  </div></div>`;
+  const nb = $('#calBody');
+  nb.scrollTop = st.scroll != null ? st.scroll
+    : Math.min(7 * H, Math.max(0, (new Date().getHours() - 1) * H));
+}
+
+function listaHTML() {
+  const now = Date.now();
+  const ini = Math.max(st.cursor.getTime(), sod(new Date()).getTime() === st.cursor.getTime() ? now - 1 : 0);
+  const fim = addDays(st.cursor, 30).getTime();
+  const itens = st.reservas.filter(r => r.fim > ini && r.inicio < fim).sort((a, b) => a.inicio - b.inicio);
+  if (!itens.length) return `<div class="list"><p class="empty">Nenhuma reserva neste período. A sala está livre.</p></div>`;
+  const grupos = {};
+  itens.forEach(r => { const k = sod(r.inicio).getTime(); (grupos[k] = grupos[k] || []).push(r); });
+  return `<div class="list">` + Object.keys(grupos).map(k => {
+    const d = new Date(Number(k));
+    return `<div class="day"><h3>${DSEM_LONGO[d.getDay()]}, ${d.getDate()} de ${MESES_LONGO[d.getMonth()]}</h3>` + grupos[k].map(r => {
+      const tag = r.inicio <= now && r.fim > now ? '<span class="tag now">Agora</span>' : r.status === 'guardada' ? '<span class="tag hold">Guardado</span>' : r.meu ? '<span class="tag mine">Sua</span>' : '';
+      return `<button class="row" data-ev="${r.id}"><span class="tm">${hm(r.inicio)}–${hm(r.fim)}</span><span><div class="tt">${esc(r.status === 'guardada' ? 'Guardado para ' + r.nome : r.titulo)}</div><div class="ow">${esc(r.nome)}${r.participantes ? ` · ${r.participantes} pessoas` : ''}${r.serieId ? ' · recorrente' : ''}</div></span>${tag}</button>`;
+    }).join('') + `</div>`;
+  }).join('') + `</div>`;
+}
+
+function miniItem(r, comDia) {
+  const t = r.status === 'guardada' ? `Guardado para ${r.nome}` : r.titulo;
+  return `<button data-ev="${r.id}"><span class="tm">${comDia ? fmtDia(r.inicio) + '<br>' : ''}${hm(r.inicio)}–${hm(r.fim)}</span><span><div class="tt">${esc(t)}</div><div class="ow">${esc(r.nome)}</div></span></button>`;
+}
+
+function renderAside() {
+  const now = Date.now();
+  const hoje = hojeLista();
+  const minhas = st.mine.reservas.filter(r => r.fim > now);
+  const rec = st.mine.recebidos, feitos = st.mine.feitos;
+  const stNome = { pendente: 'Aguardando', aceita: 'Aceito · confirme', confirmada: 'Confirmado', recusada: 'Recusado', expirada: 'Expirado', cancelada: 'Cancelado', liberada: 'Horário liberado' };
+  $('#aside').innerHTML = `
+    <div class="panel"><h3>Hoje</h3><div class="mini">${hoje.length ? hoje.map(r => miniItem(r)).join('') : '<p class="empty">Nada reservado no restante do dia.</p>'}</div></div>
+    <div class="panel"><h3>Minhas reservas</h3>
+      <div class="mini">${minhas.length ? minhas.slice(0, 10).map(r => miniItem(r, true)).join('') : '<p class="empty">Nenhuma reserva sua neste aparelho.</p>'}</div>
+      ${minhas.length > 10 ? `<p class="note">+ ${minhas.length - 10} outras</p>` : ''}
+      <button class="btn link" data-act="recuperar">Reservou em outro aparelho? Recuperar pelo e-mail</button>
+    </div>
+    ${(rec.length || feitos.length) ? `<div class="panel"><h3>Solicitações${rec.length ? `<span class="badge">${rec.length}</span>` : ''}</h3>
+      ${rec.length ? `<div class="reqgroup"><div class="label">Para você responder</div>${rec.map(p => `<button class="req" data-act="responder" data-id="${p.id}"><span class="tt">${esc(p.nome)} · ${esc(p.titulo)}</span><span class="ow">${esc(quando(p.inicio, p.fim))}</span><span class="st pendente">Aguardando sua resposta</span></button>`).join('')}</div>` : ''}
+      ${feitos.length ? `<div class="reqgroup"><div class="label">Feitas por você</div>${feitos.slice(0, 8).map(p => `<button class="req" data-act="pedido" data-id="${p.id}"><span class="tt">${esc(p.titulo)}</span><span class="ow">${esc(quando(p.inicio, p.fim))} · com ${esc(p.donoNome)}</span><span class="st ${p.status}">${stNome[p.status] || p.status}</span></button>`).join('')}</div>` : ''}
+    </div>` : ''}
+    <div class="panel">
+      <div class="legend"><span><i style="background:var(--ev-bg);border:1px solid var(--ev-bd)"></i>Reservado</span><span><i style="background:var(--mine-bg)"></i>Sua reserva</span><span><i style="background:var(--soon-bg);border:1px dashed var(--soon)"></i>Guardado</span></div>
+      <p class="note" style="margin-top:8px">Clique num horário vazio para reservar ou numa reserva para ver detalhes. A agenda se atualiza sozinha a cada minuto.</p>
+    </div>`;
+}
+
+/* ---------- Modais ---------- */
+function modal(html) {
+  const root = $('#modalRoot');
+  root.innerHTML = `<div class="overlay"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;
+  const ov = root.firstElementChild;
+  ov.addEventListener('mousedown', e => { if (e.target === ov) fechar(); });
+  ov.querySelectorAll('[data-x]').forEach(b => b.addEventListener('click', fechar));
+  setTimeout(() => ov.querySelector('input:not([type=hidden]),textarea,select')?.focus(), 30);
+  return ov.querySelector('.modal');
+}
+function fechar() { $('#modalRoot').innerHTML = ''; }
+const cab = t => `<header><h2>${t}</h2><button class="btn ghost iconbtn" data-x aria-label="Fechar">✕</button></header>`;
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 4200);
+}
+
+async function ocupado(btn, fn) {
+  const m = btn.closest('.modal') || document.body;
+  btn.disabled = true; m.classList.add('loading');
+  try { return await fn(); } finally { btn.disabled = false; m.classList.remove('loading'); }
+}
+
+const achar = id => st.reservas.find(r => r.id === id) || st.mine.reservas.find(r => r.id === id);
+
+/* Nova / editar */
+function abrirForm(o = {}) {
+  const ed = o.reserva, p = perfil();
+  const ini = ed ? ed.inicio : o.inicio, fim = ed ? ed.fim : o.fim;
+  const m = modal(cab(ed ? 'Editar reserva' : 'Nova reserva') + `
+    <form class="body" id="f" novalidate>
+      <div class="field"><label for="fTit">Tema da reunião</label><input id="fTit" maxlength="120" value="${esc(ed ? ed.titulo : o.titulo || '')}" placeholder="Ex.: Planejamento de campanha"></div>
+      ${ed ? '' : `<div class="grid2">
+        <div class="field"><label for="fNome">Seu nome</label><input id="fNome" maxlength="80" value="${esc(p.nome)}" autocomplete="name"></div>
+        <div class="field"><label for="fEmail">E-mail corporativo</label><input id="fEmail" type="email" maxlength="120" value="${esc(p.email)}" autocomplete="email"></div>
+      </div>`}
+      <div class="grid3">
+        <div class="field"><label for="fData">Data</label><input id="fData" type="date" value="${ymd(ini)}"></div>
+        <div class="field"><label for="fIni">Início</label><input id="fIni" type="time" step="300" value="${hm(ini)}"></div>
+        <div class="field"><label for="fFim">Término</label><input id="fFim" type="time" step="300" value="${hm(fim)}"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="fPart">Participantes</label><input id="fPart" type="number" min="1" max="999" value="${esc(ed ? ed.participantes : o.participantes || '')}" placeholder="Opcional"></div>
+        ${ed ? '' : `<div class="field"><label for="fRep">Repetir</label><select id="fRep">
+          <option value="nenhuma">Não repete</option><option value="diaria">Todos os dias</option><option value="uteis">Dias úteis (seg–sex)</option>
+          <option value="semanal">Toda semana</option><option value="quinzenal">A cada 2 semanas</option><option value="mensal">Todo mês</option></select></div>`}
+      </div>
+      ${ed ? '' : `<div class="field" id="ateBox" hidden><label for="fAte">Repetir até</label><input id="fAte" type="date" value="${ymd(addDays(ini, 28))}" max="${ymd(addDays(ini, 365))}"></div>`}
+      <div class="field"><label for="fObs">Observações</label><textarea id="fObs" maxlength="500" placeholder="Opcional">${esc(ed ? ed.observacoes : '')}</textarea></div>
+      ${ed ? '' : '<p class="note">Você recebe por e-mail a confirmação e o link para editar ou cancelar depois.</p>'}
+      <div id="fMsg"></div>
+    </form>
+    <footer><button class="btn" type="button" data-x>Cancelar</button><button class="btn primary" type="submit" form="f" id="fOk">${ed ? 'Salvar' : 'Reservar'}</button></footer>`);
+  const rep = $('#fRep', m);
+  rep?.addEventListener('change', () => { $('#ateBox', m).hidden = rep.value === 'nenhuma'; });
+  const coletar = () => {
+    const d = $('#fData', m).value, a = $('#fIni', m).value, b = $('#fFim', m).value;
+    if (!d || !a || !b) throw new Error('Preencha data, início e término.');
+    const i = juntar(d, a); let f = juntar(d, b);
+    if (f <= i) f += DIA; // termina no dia seguinte
+    const dados = { titulo: $('#fTit', m).value.trim(), inicio: i, fim: f, participantes: $('#fPart', m).value, observacoes: $('#fObs', m).value };
+    if (!dados.titulo) throw new Error('Informe o tema da reunião.');
+    if (!ed) {
+      dados.nome = $('#fNome', m).value.trim(); dados.email = $('#fEmail', m).value.trim().toLowerCase();
+      if (!dados.nome) throw new Error('Informe seu nome.');
+      if (!okEmail(dados.email)) throw new Error('Informe um e-mail válido.');
+      if (rep.value !== 'nenhuma') {
+        const at = $('#fAte', m).value; if (!at) throw new Error('Informe até quando repete.');
+        dados.recorrencia = { tipo: rep.value, ate: juntar(at, '23:59') };
+      }
+    }
+    return dados;
+  };
+  const enviar = async (extra = {}) => {
+    const msg = $('#fMsg', m);
+    let dados;
+    try { dados = coletar(); } catch (e) { msg.innerHTML = `<div class="err">${esc(e.message)}</div>`; return; }
+    try {
+      await ocupado($('#fOk', m), async () => {
+        if (ed) { await api('editar', { id: ed.id, ...dados }); toast('Reserva atualizada.'); }
+        else {
+          salvarPerfil(dados.nome, dados.email);
+          const j = await api('criar', { ...dados, ...extra });
+          addTokens([j.token]);
+          toast(j.criadas > 1 ? `${j.criadas} reservas confirmadas${j.puladas ? ` (${j.puladas} datas puladas)` : ''}.` : 'Reserva confirmada. Enviamos a confirmação por e-mail.');
+        }
+      });
+      fechar(); atualizar();
+    } catch (e) {
+      if (e.dados?.erro === 'conflito') {
+        msg.innerHTML = conflitoHTML(e.dados, !ed);
+        $('[data-pular]', msg)?.addEventListener('click', () => enviar({ pularConflitos: true }));
+        $('[data-solicitar]', msg)?.addEventListener('click', () => {
+          const c = e.dados.conflitos[0].com[0];
+          const alvo = achar(c.id) || c;
+          abrirSolicitar(alvo, dados);
+        });
+      } else msg.innerHTML = `<div class="err">${esc(e.message)}</div>`;
+    }
+  };
+  $('#f', m).addEventListener('submit', ev => { ev.preventDefault(); enviar(); });
+}
+
+function conflitoHTML(d, podeSolicitar) {
+  const lista = d.conflitos.slice(0, 6).map(c => `<li>${esc(quando(c.inicio, c.fim))} — ${c.com.map(x => `${esc(x.status === 'guardada' ? 'horário guardado' : x.titulo)} (${esc(x.nome)})`).join(', ')}</li>`).join('');
+  const umSo = d.total === 1 && d.conflitos.length === 1 && d.conflitos[0].com.length === 1 && d.conflitos[0].com[0].status === 'confirmada';
+  return `<div class="err"><strong>${esc(d.mensagem)}</strong><ul>${lista}</ul>${d.conflitos.length > 6 ? `<div>… e mais ${d.conflitos.length - 6}</div>` : ''}</div>
+    <div class="acts">${d.livres ? `<button type="button" class="btn" data-pular>Reservar só as ${d.livres} datas livres</button>` : ''}
+    ${podeSolicitar && umSo ? `<button type="button" class="btn primary" data-solicitar>Solicitar este horário a ${esc(d.conflitos[0].com[0].nome)}</button>` : ''}</div>`;
+}
+
+/* Detalhes */
+function abrirDetalhe(id) {
+  const r = achar(id); if (!r) return;
+  const now = Date.now();
+  const pode = (r.meu || st.admin) && r.fim > now;
+  const titulo = r.status === 'guardada' ? `Guardado para ${r.nome}` : r.titulo;
+  const m = modal(cab(esc(titulo)) + `
+    <div class="body">
+      ${r.status === 'guardada' ? `<div class="warn">Horário cedido por uma solicitação de ajuste. Fica guardado até ${esc(fmtDia(r.expiraEm))} às ${hm(r.expiraEm)} para ${esc(r.nome)} confirmar.</div>` : ''}
+      <dl class="dl">
+        <dt>Quando</dt><dd>${esc(quando(r.inicio, r.fim))}</dd>
+        <dt>Reservado por</dt><dd>${esc(r.nome)}${r.meu ? ' (você)' : ''}${r.email ? ` · ${esc(r.email)}` : ''}</dd>
+        ${r.participantes ? `<dt>Participantes</dt><dd>${esc(r.participantes)}</dd>` : ''}
+        ${r.observacoes ? `<dt>Observações</dt><dd>${esc(r.observacoes)}</dd>` : ''}
+        ${r.serieId ? `<dt>Repetição</dt><dd>Faz parte de uma reserva recorrente</dd>` : ''}
+      </dl>
+      ${pode && st.admin && r.status === 'confirmada' ? `<div class="sub-box"><div class="label">Administrador · transferir reserva</div>
+        <div class="grid2"><div class="field"><label for="tNome">Novo responsável</label><input id="tNome" maxlength="80"></div>
+        <div class="field"><label for="tEmail">E-mail</label><input id="tEmail" type="email" maxlength="120"></div></div>
+        ${r.serieId ? `<label class="check"><input type="checkbox" id="tSerie"> Transferir esta e as próximas da série</label>` : ''}
+        <div><button class="btn" id="tOk">Transferir</button></div></div>` : ''}
+      <div id="dMsg"></div>
+    </div>
+    <footer>
+      <div class="left">
+        ${pode && r.status === 'confirmada' ? `<button class="btn" id="dEd">Editar</button>` : ''}
+        ${pode ? `<button class="btn danger" id="dCan">Cancelar reserva</button>` : ''}
+        ${pode && r.serieId && r.status === 'confirmada' ? `<button class="btn danger" id="dCanS">Cancelar esta e as próximas</button>` : ''}
+      </div>
+      ${r.status === 'guardada' && r.meu && r.pedidoId ? `<button class="btn primary" id="dConf">Confirmar reserva</button>` : ''}
+      ${!r.meu && r.status === 'confirmada' && r.fim > now ? `<button class="btn primary" id="dSol">Solicitar este horário</button>` : ''}
+      <button class="btn" data-x>Fechar</button>
+    </footer>`);
+  const msg = $('#dMsg', m);
+  const falha = e => msg.innerHTML = `<div class="err">${esc(e.message)}</div>`;
+  $('#dEd', m)?.addEventListener('click', () => abrirForm({ reserva: r }));
+  $('#dSol', m)?.addEventListener('click', () => abrirSolicitar(r));
+  $('#dConf', m)?.addEventListener('click', ev => confirmarPedido(r.pedidoId, ev.currentTarget));
+  const cancelar = (btn, escopo) => btn?.addEventListener('click', async () => {
+    if (!btn.classList.contains('armed')) { btn.classList.add('armed'); btn.textContent = 'Clique de novo para confirmar'; return; }
+    try { const j = await ocupado(btn, () => api('cancelar', { id: r.id, escopo })); toast(j.canceladas > 1 ? `${j.canceladas} reservas canceladas.` : 'Reserva cancelada.'); fechar(); atualizar(); }
+    catch (e) { falha(e); }
+  });
+  cancelar($('#dCan', m), 'uma'); cancelar($('#dCanS', m), 'futuras');
+  $('#tOk', m)?.addEventListener('click', async ev => {
+    const nome = $('#tNome', m).value.trim(), email = $('#tEmail', m).value.trim().toLowerCase();
+    if (!nome || !okEmail(email)) return falha(new Error('Informe nome e e-mail válidos do novo responsável.'));
+    try { await ocupado(ev.currentTarget, () => api('transferir', { id: r.id, nome, email, escopo: $('#tSerie', m)?.checked ? 'futuras' : 'uma' })); toast(`Reserva transferida para ${nome}.`); fechar(); atualizar(); }
+    catch (e) { falha(e); }
+  });
+}
+
+/* Solicitar horário ocupado */
+function abrirSolicitar(r, pre = {}) {
+  const p = perfil();
+  const ini = pre.inicio || r.inicio, fim = pre.fim || r.fim;
+  const m = modal(cab('Solicitar este horário') + `
+    <form class="body" id="s" novalidate>
+      <div class="vs"><div><div class="label">Reserva atual</div><strong>${esc(r.titulo)}</strong><span class="mono">${esc(quando(r.inicio, r.fim))}</span><div class="muted">${esc(r.nome)}</div></div>
+        <div><div class="label">Como funciona</div><span class="muted">${esc(r.nome)} recebe seu pedido por e-mail e pode liberar o horário (cancelando ou movendo a reserva) ou recusar. Você é avisado aqui e por e-mail.</span></div></div>
+      <div class="field"><label for="sTit">Tema da sua reunião</label><input id="sTit" maxlength="120" value="${esc(pre.titulo || '')}"></div>
+      <div class="grid2">
+        <div class="field"><label for="sNome">Seu nome</label><input id="sNome" maxlength="80" value="${esc(pre.nome || p.nome)}"></div>
+        <div class="field"><label for="sEmail">E-mail corporativo</label><input id="sEmail" type="email" maxlength="120" value="${esc(pre.email || p.email)}"></div>
+      </div>
+      <div class="grid3">
+        <div class="field"><label for="sData">Data</label><input id="sData" type="date" value="${ymd(ini)}"></div>
+        <div class="field"><label for="sIni">Início</label><input id="sIni" type="time" step="300" value="${hm(ini)}"></div>
+        <div class="field"><label for="sFim">Término</label><input id="sFim" type="time" step="300" value="${hm(fim)}"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="sPart">Participantes</label><input id="sPart" type="number" min="1" max="999" value="${esc(pre.participantes || '')}"></div>
+        <div class="field"><label for="sMot">Motivo</label><select id="sMot">
+          <option>Reunião com diretoria ou liderança</option><option>Cliente ou parceiro externo</option><option>Precisa de mais lugares</option>
+          <option>Prazo ou urgência</option><option>Outro</option></select></div>
+      </div>
+      <div class="field"><label for="sJus">Justificativa</label><textarea id="sJus" maxlength="600" placeholder="Explique por que precisa deste horário e se há alternativas."></textarea></div>
+      <div id="sMsg"></div>
+    </form>
+    <footer><button class="btn" type="button" data-x>Cancelar</button><button class="btn primary" type="submit" form="s" id="sOk">Enviar pedido</button></footer>`);
+  $('#s', m).addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const msg = $('#sMsg', m);
+    const d = $('#sData', m).value, a = $('#sIni', m).value, b = $('#sFim', m).value;
+    const dados = { reservaId: r.id, titulo: $('#sTit', m).value.trim(), nome: $('#sNome', m).value.trim(), email: $('#sEmail', m).value.trim().toLowerCase(),
+      participantes: $('#sPart', m).value, motivo: $('#sMot', m).value, justificativa: $('#sJus', m).value.trim() };
+    if (!d || !a || !b) return msg.innerHTML = '<div class="err">Preencha data, início e término.</div>';
+    dados.inicio = juntar(d, a); dados.fim = juntar(d, b); if (dados.fim <= dados.inicio) dados.fim += DIA;
+    if (!dados.titulo || !dados.nome || !okEmail(dados.email)) return msg.innerHTML = '<div class="err">Preencha tema, nome e um e-mail válido.</div>';
+    if (!dados.justificativa) return msg.innerHTML = '<div class="err">Conte por que você precisa deste horário.</div>';
+    try {
+      const j = await ocupado($('#sOk', m), () => api('solicitar', dados));
+      salvarPerfil(dados.nome, dados.email); addTokens([j.token]);
+      toast(`Pedido enviado para ${r.nome}. Você será avisado aqui e por e-mail.`); fechar(); atualizar();
+    } catch (e) { msg.innerHTML = e.dados?.erro === 'conflito' ? conflitoHTML(e.dados, false) : `<div class="err">${esc(e.message)}</div>`; }
+  });
+}
+
+/* Responder pedido (dono ou admin) */
+function abrirResponder(id) {
+  const p = st.mine.recebidos.find(x => x.id === id);
+  if (!p) { toast('Esta solicitação já foi respondida ou expirou.'); return; }
+  const dur = p.reservaFim - p.reservaInicio;
+  const sug = p.fim, sugFim = p.fim + dur;
+  const m = modal(cab('Pedido de horário') + `
+    <div class="body">
+      <div class="vs">
+        <div><div class="label">${p.meuDono ? 'Sua reserva' : `Reserva de ${esc(p.donoNome)}`}</div><strong>${esc(p.reservaTitulo)}</strong><span class="mono">${esc(quando(p.reservaInicio, p.reservaFim))}</span></div>
+        <div><div class="label">Pedido de ${esc(p.nome)}</div><strong>${esc(p.titulo)}</strong><span class="mono">${esc(quando(p.inicio, p.fim))}</span></div>
+      </div>
+      <dl class="dl">
+        ${p.participantes ? `<dt>Participantes</dt><dd>${esc(p.participantes)}</dd>` : ''}
+        <dt>Motivo</dt><dd>${esc(p.motivo || '—')}</dd>
+        <dt>Justificativa</dt><dd>${esc(p.justificativa)}</dd>
+        ${p.email ? `<dt>Contato</dt><dd>${esc(p.email)}</dd>` : ''}
+      </dl>
+      <div class="sub-box">
+        <div class="label">Se aceitar, o que fazer com ${p.meuDono ? 'a sua reserva' : 'a reserva atual'}?</div>
+        <div class="choice">
+          <label><input type="radio" name="modo" value="cancelar" checked> Cancelar e liberar o horário</label>
+          <label><input type="radio" name="modo" value="mover"> Mover para outro horário</label>
+        </div>
+        <div class="grid3" id="mvBox" hidden>
+          <div class="field"><label for="mData">Data</label><input id="mData" type="date" value="${ymd(sug)}"></div>
+          <div class="field"><label for="mIni">Início</label><input id="mIni" type="time" step="300" value="${hm(sug)}"></div>
+          <div class="field"><label for="mFim">Término</label><input id="mFim" type="time" step="300" value="${hm(sugFim)}"></div>
+        </div>
+        <div class="field"><label for="rMsg">Mensagem para ${esc(p.nome)} (opcional)</label><textarea id="rMsg" maxlength="500"></textarea></div>
+        <p class="note">${st.admin && !p.meuDono ? 'Como administrador, ao aceitar a reserva já é criada para quem pediu.' : `Ao aceitar, o horário fica guardado por 48 h para ${esc(p.nome)} confirmar.`}</p>
+      </div>
+      <div id="rRes"></div>
+    </div>
+    <footer><button class="btn danger" id="rNo">Recusar</button><button class="btn primary" id="rYes">Aceitar</button></footer>`);
+  m.querySelectorAll('input[name=modo]').forEach(i => i.addEventListener('change', () => { $('#mvBox', m).hidden = $('input[name=modo]:checked', m).value !== 'mover'; }));
+  const res = $('#rRes', m);
+  const enviar = async (btn, decisao) => {
+    const body = { pedidoId: p.id, decisao, mensagem: $('#rMsg', m).value.trim() };
+    if (decisao === 'aceitar') {
+      body.modo = $('input[name=modo]:checked', m).value;
+      if (body.modo === 'mover') {
+        const d = $('#mData', m).value, a = $('#mIni', m).value, b = $('#mFim', m).value;
+        if (!d || !a || !b) return res.innerHTML = '<div class="err">Informe o novo horário da reserva.</div>';
+        body.novoInicio = juntar(d, a); body.novoFim = juntar(d, b); if (body.novoFim <= body.novoInicio) body.novoFim += DIA;
+      }
+    }
+    try {
+      const j = await ocupado(btn, () => api('responder', body));
+      toast(decisao === 'recusar' ? 'Pedido recusado.' : j.status === 'confirmada' ? 'Aceito. A reserva foi criada para quem pediu.' : 'Aceito. O horário ficou guardado para quem pediu confirmar.');
+      fechar(); atualizar();
+    } catch (e) { res.innerHTML = e.dados?.erro === 'conflito' ? conflitoHTML(e.dados, false) : `<div class="err">${esc(e.message)}</div>`; }
+  };
+  $('#rNo', m).addEventListener('click', ev => enviar(ev.currentTarget, 'recusar'));
+  $('#rYes', m).addEventListener('click', ev => enviar(ev.currentTarget, 'aceitar'));
+}
+
+/* Pedido feito por mim */
+function abrirPedido(id) {
+  const p = st.mine.feitos.find(x => x.id === id); if (!p) return;
+  const nomes = { pendente: `Aguardando a resposta de ${p.donoNome}.`, aceita: `Aceito! O horário está guardado até ${fmtDia(p.expiraEm)} às ${hm(p.expiraEm)}. Confirme para garantir.`,
+    confirmada: 'Reserva confirmada.', recusada: `${p.donoNome} manteve a reserva.`, expirada: 'O pedido expirou.', cancelada: 'Você desistiu deste pedido.',
+    liberada: 'A reserva original foi cancelada e o horário ficou livre — reserve direto, se ainda precisar.' };
+  const m = modal(cab('Seu pedido de horário') + `
+    <div class="body">
+      <div class="${p.status === 'aceita' || p.status === 'confirmada' ? 'okbox' : p.status === 'pendente' ? 'warn' : 'err'}">${esc(nomes[p.status] || p.status)}</div>
+      <dl class="dl"><dt>Tema</dt><dd>${esc(p.titulo)}</dd><dt>Horário pedido</dt><dd>${esc(quando(p.inicio, p.fim))}</dd>
+        <dt>Reserva original</dt><dd>${esc(p.reservaTitulo)} · ${esc(p.donoNome)}</dd>${p.resposta ? `<dt>Resposta</dt><dd>${esc(p.resposta)}</dd>` : ''}</dl>
+      <div id="pMsg"></div>
+    </div>
+    <footer>${p.status === 'pendente' || p.status === 'aceita' ? `<div class="left"><button class="btn danger" id="pDes">Desistir</button></div>` : ''}
+      ${p.status === 'aceita' ? `<button class="btn primary" id="pConf">Confirmar reserva</button>` : ''}<button class="btn" data-x>Fechar</button></footer>`);
+  $('#pConf', m)?.addEventListener('click', ev => confirmarPedido(p.id, ev.currentTarget));
+  $('#pDes', m)?.addEventListener('click', ev => desistirPedido(p.id, ev.currentTarget));
+}
+
+async function confirmarPedido(id, btn) {
+  try { await ocupado(btn, () => api('confirmar', { pedidoId: id })); toast('Reserva confirmada!'); fechar(); }
+  catch (e) { toast(e.message); }
+  atualizar();
+}
+async function desistirPedido(id, btn) {
+  try { await ocupado(btn, () => api('desistir', { pedidoId: id })); toast('Pedido cancelado.'); fechar(); }
+  catch (e) { toast(e.message); }
+  atualizar();
+}
+
+function abrirAdmin() {
+  const m = modal(cab('Modo administrador') + `
+    <form class="body" id="a" novalidate>
+      <p class="note">Administradores podem editar, cancelar e transferir qualquer reserva e responder a qualquer pedido. A senha fica salva só até fechar o navegador.</p>
+      <div class="field"><label for="aPw">Senha</label><input id="aPw" type="password" autocomplete="current-password"></div>
+      <div id="aMsg"></div>
+    </form>
+    <footer><button class="btn" type="button" data-x>Cancelar</button><button class="btn primary" type="submit" form="a" id="aOk">Entrar</button></footer>`);
+  $('#a', m).addEventListener('submit', async ev => {
+    ev.preventDefault();
+    sess.set('rs1.admin', $('#aPw', m).value);
+    try { await ocupado($('#aOk', m), () => api('admin')); toast('Modo administrador ativo.'); fechar(); atualizar(); }
+    catch (e) { sess.set('rs1.admin', null); $('#aMsg', m).innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+  });
+}
+
+function abrirRecuperar() {
+  const m = modal(cab('Recuperar minhas reservas') + `
+    <form class="body" id="rc" novalidate>
+      <p class="note">Como o portal não usa login, suas reservas ficam ligadas ao aparelho onde você reservou. Informe o e-mail usado na reserva e enviaremos um link para abrir aqui.</p>
+      <div class="field"><label for="rcE">E-mail corporativo</label><input id="rcE" type="email" value="${esc(perfil().email)}"></div>
+      <div id="rcMsg"></div>
+    </form>
+    <footer><button class="btn" type="button" data-x>Cancelar</button><button class="btn primary" type="submit" form="rc" id="rcOk">Enviar link</button></footer>`);
+  $('#rc', m).addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const email = $('#rcE', m).value.trim().toLowerCase();
+    if (!okEmail(email)) return $('#rcMsg', m).innerHTML = '<div class="err">Informe um e-mail válido.</div>';
+    try { await ocupado($('#rcOk', m), () => api('recuperar', { email })); $('#rcMsg', m).innerHTML = '<div class="okbox">Se houver reservas ativas nesse e-mail, o link chega em instantes. Confira também o lixo eletrônico.</div>'; $('#rcOk', m).hidden = true; }
+    catch (e) { $('#rcMsg', m).innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+  });
+}
+
+function novaEm(ini) {
+  const now = Date.now();
+  if (ini < now - 15 * MIN) { toast('Esse horário já passou.'); return; }
+  ini = Math.max(ini, arred(now));
+  const prox = st.reservas.filter(r => r.inicio >= ini).sort((a, b) => a.inicio - b.inicio)[0];
+  let fim = ini + HORA;
+  if (prox && prox.inicio < fim && prox.inicio - ini >= 15 * MIN) fim = prox.inicio;
+  abrirForm({ inicio: ini, fim });
+}
+
+/* ---------- Eventos ---------- */
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fechar(); });
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => { st.view = b.dataset.view; store.set('rs1.view', st.view); st.scroll = null; render(); atualizar(); }));
+$('#prev').addEventListener('click', () => { st.cursor = addDays(st.cursor, st.view === 'dia' ? -1 : st.view === 'semana' ? -7 : -30); render(); atualizar(); });
+$('#next').addEventListener('click', () => { st.cursor = addDays(st.cursor, st.view === 'dia' ? 1 : st.view === 'semana' ? 7 : 30); render(); atualizar(); });
+$('#hoje').addEventListener('click', () => { st.cursor = sod(new Date()); st.scroll = null; render(); atualizar(); });
+$('#nova').addEventListener('click', () => novaEm(arred(Date.now())));
+
+document.addEventListener('click', e => {
+  if (e.target.closest('.modal')) return;
+  const ev = e.target.closest('[data-ev]');
+  if (ev) { abrirDetalhe(ev.dataset.ev); return; }
+  const act = e.target.closest('[data-act]');
+  if (act) {
+    const id = act.dataset.id;
+    switch (act.dataset.act) {
+      case 'agora': return novaEm(arred(Date.now()));
+      case 'responder': return abrirResponder(id);
+      case 'pedido': return abrirPedido(id);
+      case 'confirmar': return confirmarPedido(id, act);
+      case 'desistir': return desistirPedido(id, act);
+      case 'dispensar': st.dispensados = [...st.dispensados, id].slice(-100); store.set('rs1.dispensados', st.dispensados); return renderNotices();
+      case 'recuperar': return abrirRecuperar();
+      case 'entrarAdmin': return abrirAdmin();
+      case 'sairAdmin': sess.set('rs1.admin', null); st.admin = false; toast('Você saiu do modo administrador.'); return atualizar();
+      case 'recarregar': return atualizar();
+    }
+    return;
+  }
+  const col = e.target.closest('.col');
+  if (col && !col.classList.contains('past') && configurado) {
+    const y = e.clientY - col.getBoundingClientRect().top;
+    const min = Math.floor((y / H) * 60 / 30) * 30;
+    novaEm(Number(col.dataset.day) + min * MIN);
+  }
+});
+
+/* Links vindos do e-mail: ?t=TOKEN[,TOKEN]&pedido=ID */
+const qs = new URLSearchParams(location.search);
+const pedidoLink = qs.get('pedido');
+if (qs.get('t')) addTokens(qs.get('t').split(',').map(s => s.trim()).filter(s => s.length >= 16));
+if (qs.has('t') || qs.has('pedido')) history.replaceState(null, '', location.pathname);
+
+render();
+atualizar().then(() => {
+  if (pedidoLink) {
+    if (st.mine.recebidos.some(p => p.id === pedidoLink)) abrirResponder(pedidoLink);
+    else if (st.mine.feitos.some(p => p.id === pedidoLink)) abrirPedido(pedidoLink);
+    else toast('Esta solicitação já foi resolvida.');
+  } else if (qs.get('t')) toast('Pronto! Suas reservas estão liberadas neste aparelho.');
+});
+setInterval(() => { if (!document.hidden && !$('#modalRoot').children.length) atualizar(); }, 60000);
+setInterval(() => { if (st.carregou) { renderSign(); } }, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) atualizar(); });
+</script>
+</body>
+</html>
